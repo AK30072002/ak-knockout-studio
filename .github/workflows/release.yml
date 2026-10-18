@@ -82,8 +82,8 @@ jobs:
             echo "AKKS_KEY_PASSWORD=$KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
             echo "AKKS_KEY_ALIAS=akknockoutstudio" >> "$GITHUB_ENV"
           elif [ "$PUBLISH" = "true" ]; then
-            echo "::error::The Android signing secrets are missing. Add ANDROID_KEYSTORE_BASE64 and ANDROID_KEYSTORE_PASSWORD under Settings → Secrets and variables → Actions, then run this workflow again."
-            exit 1
+            echo "::warning::No Android signing secrets yet, so the APK is skipped this time. Add ANDROID_KEYSTORE_BASE64 and ANDROID_KEYSTORE_PASSWORD under Settings → Secrets and variables → Actions, then run this workflow again to add the APK."
+            echo "SKIP_APK=1" >> "$GITHUB_ENV"
           else
             echo "::warning::No signing secrets: building a test APK signed with a temporary key."
             keytool -genkeypair -keystore android/app/release.keystore -storetype PKCS12 -alias test -keyalg RSA -keysize 2048 -validity 30 -storepass testtest -keypass testtest -dname "CN=Test"
@@ -93,11 +93,13 @@ jobs:
             echo "AKKS_KEY_ALIAS=test" >> "$GITHUB_ENV"
           fi
       - name: Build the APK
+        if: env.SKIP_APK != '1'
         working-directory: android
         run: |
           chmod +x gradlew
           ./gradlew --no-daemon assembleRelease
       - name: Name and check the APK
+        if: env.SKIP_APK != '1'
         run: |
           VERSION=$(node -p "require('./package.json').version")
           mkdir -p out
@@ -106,6 +108,7 @@ jobs:
           "$BT/apksigner" verify --verbose --print-certs "out/AK-Knockout-Studio-${VERSION}.apk"
           "$BT/aapt2" dump badging "out/AK-Knockout-Studio-${VERSION}.apk" | head -5
       - uses: actions/upload-artifact@v4
+        if: env.SKIP_APK != '1'
         with:
           name: android
           path: out/*.apk
