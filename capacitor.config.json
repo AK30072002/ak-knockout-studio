@@ -1,0 +1,11 @@
+{
+  "appId": "com.ajaikrishna.akknockoutstudio",
+  "appName": "AK Knockout Studio",
+  "webDir": "www",
+  "backgroundColor": "#1d1e21",
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": false,
+    "webContentsDebuggingEnabled": false
+  }
+}

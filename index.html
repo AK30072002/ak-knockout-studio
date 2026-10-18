@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AK Knockout Studio 3: a free video and photo editor with AI upscaling, AI background removal, collages, stickers, transitions, music and knockout text.">
+  <title>AK Knockout Studio</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bungee&family=Lobster&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,900&family=Oswald:wght@300;400;500;600;700&family=Pacifico&family=Permanent+Marker&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700;1,900&family=Righteous&family=Roboto+Slab:wght@300;400;700;900&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <button id="btnHome" class="brand" type="button" title="Home: start something new or open a draft" aria-label="Home">
+      <img src="assets/logo.png" alt="" width="32" height="32">
+      <span class="brand-name">AK Knockout Studio <span class="ver">3</span></span>
+    </button>
+    <input id="projectName" class="project-name" value="Untitled project" aria-label="Project name" spellcheck="false">
+    <nav class="top-actions" aria-label="Project actions">
+      <button id="btnNew" class="btn ghost" type="button" title="Back to the start screen (your work is kept in Drafts)">New</button>
+      <button id="btnOpen" class="btn ghost" type="button" title="Open project (Ctrl+O)">Open</button>
+      <button id="btnSave" class="btn ghost" type="button" title="Save project (Ctrl+S)">Save</button>
+      <span class="sep" aria-hidden="true"></span>
+      <button id="btnUndo" class="btn icon" type="button" title="Undo (Ctrl+Z)" aria-label="Undo">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5L2.5 7 6 10.5V8h3.5a3 3 0 010 6H8v1.5h1.5a4.5 4.5 0 000-9H6z"/></svg>
+      </button>
+      <button id="btnRedo" class="btn icon" type="button" title="Redo (Ctrl+Shift+Z)" aria-label="Redo">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5L13.5 7 10 10.5V8H6.5a3 3 0 000 6H8v1.5H6.5a4.5 4.5 0 010-9H10z"/></svg>
+      </button>
+      <span class="sep" aria-hidden="true"></span>
+      <button id="btnImport" class="btn" type="button" title="Add videos, photos or music (Ctrl+I)">Import media</button>
+      <button id="btnSnapshot" class="btn" type="button" title="Save the current frame as a PNG">Snapshot</button>
+      <button id="btnHelp" class="btn icon" type="button" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">?</button>
+      <button id="btnExport" class="btn primary" type="button" title="Export video (Ctrl+E)">Export video</button>
+    </nav>
+    <input type="file" id="fileMedia" accept="video/*,image/*,audio/*,.mkv,.mov,.m4a,.flac" multiple hidden>
+    <input type="file" id="fileAudio" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.opus,.flac" multiple hidden>
+    <input type="file" id="fileOverlay" accept="image/*,video/*,.mov,.mkv" hidden>
+    <input type="file" id="fileClip" accept="video/*,image/*,.mov,.mkv" hidden>
+    <input type="file" id="fileRelink" accept="video/*,audio/*,.mov,.mkv,.m4a,.flac" multiple hidden>
+    <input type="file" id="fileImage" accept="image/*" hidden>
+    <input type="file" id="fileFont" accept=".ttf,.otf,.woff,.woff2" hidden>
+    <input type="file" id="fileProject" accept=".json,application/json" hidden>
+  </header>
+
+  <aside class="layers panel" aria-label="Layers">
+    <div class="panel-head"><h2>Layers</h2></div>
+    <div class="layer-add">
+      <button id="btnAddText" class="btn small primary-soft" type="button" title="Add text (T)">Add text</button>
+      <select id="presetSelect" aria-label="Add a text preset">
+        <option value="">Text preset…</option>
+      </select>
+    </div>
+    <div class="layer-add">
+      <select id="addSelect" aria-label="Add media" class="add-select">
+        <option value="">＋ Add video, overlay, music…</option>
+        <option value="clip">Video or photo clip (to the end)</option>
+        <option value="overlay">Overlay: picture-in-picture, logo, sticker</option>
+        <option value="music">Music or sound effect</option>
+        <option value="voice">Record a voiceover</option>
+        <option value="color">Colour clip (for titles and gaps)</option>
+        <option value="freeze">Freeze frame at the playhead</option>
+        <option value="bgimage">Background image</option>
+      </select>
+    </div>
+    <ul id="layerList" class="layer-list"></ul>
+    <div class="layer-tools">
+      <button id="btnDup" class="btn small" type="button" title="Duplicate (Ctrl+D)">Duplicate</button>
+      <button id="btnSplit" class="btn small" type="button" title="Split at playhead (S)">Split</button>
+      <button id="btnUp" class="btn small icon" type="button" title="Bring forward" aria-label="Bring forward">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3l5 6H3z"/></svg>
+      </button>
+      <button id="btnDown" class="btn small icon" type="button" title="Send backward" aria-label="Send backward">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13L3 7h10z"/></svg>
+      </button>
+      <button id="btnDel" class="btn small danger" type="button" title="Delete (Del)">Delete</button>
+    </div>
+  </aside>
+
+  <main id="stageWrap" class="stage-wrap">
+    <div id="stage" class="stage">
+      <div id="canvasBox" class="canvas-box">
+        <canvas id="out" aria-label="Video preview"></canvas>
+        <canvas id="overlay" aria-hidden="true"></canvas>
+      </div>
+      <div id="dropHint" class="drop-hint">
+        <span>Playing the demo animation.</span>
+        <button id="dropImport" class="linklike" type="button">Import your video</button>
+        <span>or drop it here.</span>
+      </div>
+      <div class="drop-veil" aria-hidden="true"><span>Drop videos to add clips, music to add a track, or an image for the background<br><small>Hold Shift for an overlay, Ctrl for a photo clip</small></span></div>
+    </div>
+    <div class="transport" role="toolbar" aria-label="Playback">
+      <div class="tr-group">
+        <button id="btnStart" class="tbtn" type="button" title="Go to start (Home)" aria-label="Go to start">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="3" width="2" height="10"/><path d="M13 3v10L6 8z"/></svg>
+        </button>
+        <button id="btnPrev" class="tbtn" type="button" title="Previous frame (←)" aria-label="Previous frame">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11 3v10L4 8z"/></svg>
+        </button>
+        <button id="btnPlay" class="tbtn play" type="button" title="Play (Space)" aria-label="Play"></button>
+        <button id="btnNext" class="tbtn" type="button" title="Next frame (→)" aria-label="Next frame">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3v10l7-5z"/></svg>
+        </button>
+        <button id="btnEnd" class="tbtn" type="button" title="Go to end (End)" aria-label="Go to end">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3v10l7-5z"/><rect x="11" y="3" width="2" height="10"/></svg>
+        </button>
+      </div>
+      <output id="timecode" class="timecode">00:00:00 / 00:00:00</output>
+      <div class="tr-group tr-right">
+        <button id="btnLoop" class="tbtn toggle" type="button" title="Loop playback (L)" aria-pressed="true">Loop</button>
+        <button id="btnGuides" class="tbtn toggle" type="button" title="Safe-area guides (G)" aria-pressed="false">Guides</button>
+        <button id="btnRec" class="tbtn rec" type="button" title="Record a voiceover from the playhead (R)" aria-label="Record voiceover" aria-pressed="false">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="1.5" width="5" height="8" rx="2.5"/><path d="M3.5 7.5a4.5 4.5 0 009 0M8 12v2.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        </button>
+        <button id="btnMute" class="tbtn" type="button" title="Mute (M)" aria-label="Mute" aria-pressed="false">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10L5 10H2z"/><path d="M11 5.5a3.5 3.5 0 010 5M12.5 3.5a6 6 0 010 9" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        </button>
+        <input id="volume" class="volume" type="range" min="0" max="200" value="100" aria-label="Volume">
+        <button id="btnFull" class="tbtn" type="button" title="Full screen (F)" aria-label="Full screen">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2h4v1.5H3.5V6H2zM10 2h4v4h-1.5V3.5H10zM2 10h1.5v2.5H6V14H2zM12.5 10H14v4h-4v-1.5h2.5z"/></svg>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <aside class="inspector panel" aria-label="Properties">
+    <div class="panel-head"><h2 id="inspTitle">Project</h2></div>
+    <div id="inspector" class="insp-body"></div>
+  </aside>
+
+  <section id="timeline" class="timeline" aria-label="Timeline">
+    <div id="tlResize" class="tl-resize" title="Drag to resize the timeline" aria-hidden="true"></div>
+    <div class="tl-head">
+      <div class="tl-ruler-row">
+        <div class="tl-corner">
+          <label class="tl-zoom">
+            <span class="sr-only">Timeline zoom</span>
+            <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.6"/></svg>
+            <input id="tlZoom" type="range" min="4" max="600" value="80">
+          </label>
+          <button id="tlFit" class="btn tiny" type="button" title="Fit the whole timeline">Fit</button>
+          <label class="tl-snap" title="Snap to playhead and other layers"><input id="tlSnap" type="checkbox" checked> Snap</label>
+        </div>
+        <canvas id="tlRuler" class="tl-ruler" aria-label="Time ruler; click or drag to move the playhead"></canvas>
+      </div>
+    </div>
+    <div id="tlScroll" class="tl-scroll">
+      <div id="tlContent" class="tl-content">
+        <div id="tlRows" class="tl-rows"></div>
+        <div id="tlPlayhead" class="tl-playhead" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+
+  <section id="home" class="home" hidden aria-label="Start">
+    <div class="home-inner">
+      <header class="home-head">
+        <img src="assets/logo.png" alt="AK logo" width="56" height="56">
+        <div>
+          <h1>AK Knockout Studio <span class="ver">3</span></h1>
+          <p>Free video and photo editor. Everything stays on your computer.</p>
+        </div>
+        <button id="homeContinue" class="btn" type="button" hidden>Back to my project</button>
+      </header>
+
+      <h2 class="home-h">Create new</h2>
+      <div class="create-cards">
+        <button id="newVideo" class="create-card video" type="button">
+          <span class="cc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="14" height="14" rx="2.5"/><path d="M16.5 10l5-3v10l-5-3z"/></svg></span>
+          <span class="cc-title">Video</span>
+          <span class="cc-text">Clips, transitions, music, voiceover, text and effects</span>
+        </button>
+        <button id="newPhoto" class="create-card photo" type="button">
+          <span class="cc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="2"/><path d="M4 18l5.5-6 4 4 2.5-2.5L21 18z"/></svg></span>
+          <span class="cc-title">Photo</span>
+          <span class="cc-text">AI upscale, remove background, crop, filters, text and stickers</span>
+        </button>
+        <button id="newCollage" class="create-card collage" type="button">
+          <span class="cc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="3" width="9" height="11" rx="1.5"/><rect x="13" y="3" width="8.5" height="7" rx="1.5"/><rect x="13" y="11.5" width="8.5" height="9.5" rx="1.5"/><rect x="2.5" y="15.5" width="9" height="5.5" rx="1.5"/></svg></span>
+          <span class="cc-title">Collage</span>
+          <span class="cc-text">Up to 9 photos in a layout, with spacing and rounded corners</span>
+        </button>
+      </div>
+      <div class="home-row">
+        <span class="home-label" id="homeAspectLabel">Video shape</span>
+        <div id="homeAspect" class="chip-row" role="group" aria-labelledby="homeAspectLabel">
+          <button type="button" class="chip" data-a="auto" aria-pressed="true">Same as my video</button>
+          <button type="button" class="chip" data-a="16:9" aria-pressed="false">16:9 YouTube</button>
+          <button type="button" class="chip" data-a="9:16" aria-pressed="false">9:16 Reels, Shorts</button>
+          <button type="button" class="chip" data-a="1:1" aria-pressed="false">1:1 Square</button>
+          <button type="button" class="chip" data-a="4:5" aria-pressed="false">4:5 Portrait</button>
+        </div>
+      </div>
+      <div class="home-links">
+        <button id="homeEmptyVideo" class="link-btn" type="button">Empty video project</button>
+        <button id="homeDemo" class="link-btn" type="button">Try the knockout demo</button>
+        <button id="homeOpen" class="link-btn" type="button">Open a project file…</button>
+        <button id="homeHelp" class="link-btn" type="button">Keyboard shortcuts</button>
+      </div>
+
+      <h2 class="home-h">Drafts <span id="draftCount"></span></h2>
+      <p id="draftEmpty" class="home-empty">Your projects appear here automatically while you work. Nothing to save by hand.</p>
+      <div id="draftGrid" class="draft-grid"></div>
+      <p id="draftUsage" class="home-usage"></p>
+    </div>
+    <input type="file" id="homeVideoFiles" accept="video/*,image/*,audio/*,.mkv,.mov,.m4a,.flac" multiple hidden>
+    <input type="file" id="homePhotoFile" accept="image/*" hidden>
+    <input type="file" id="homeCollageFiles" accept="image/*" multiple hidden>
+  </section>
+
+  <dialog id="photoDlg" class="dlg" aria-labelledby="phTitle">
+    <h2 id="phTitle">Save photo</h2>
+    <p class="dlg-note">Saves the finished picture with all your text, stickers and effects.</p>
+    <div class="dlg-form">
+      <label>Format
+        <select id="phFormat">
+          <option value="image/png">PNG (best quality, keeps transparency)</option>
+          <option value="image/jpeg">JPG (smaller file, for sharing)</option>
+          <option value="image/webp">WebP (small, keeps transparency)</option>
+        </select>
+      </label>
+      <label>Size <select id="phSize"></select></label>
+      <label class="check" id="phAIRow"><input id="phAI" type="checkbox" checked> Enlarge photos with AI <small>(sharper than normal resizing)</small></label>
+      <label id="phAIQRow">AI quality
+        <select id="phAIQ"><option value="fast">Fast</option><option value="detail">High detail (slower)</option></select>
+      </label>
+      <label class="check" id="phTransRow"><input id="phTransparent" type="checkbox"> Transparent background <small>(otherwise see-through areas become white)</small></label>
+      <label id="phQualRow">Quality <span class="range-row"><input id="phQuality" type="range" min="60" max="100" value="92"><span id="phQualVal">92%</span></span></label>
+      <p id="phEstimate" class="dlg-note"></p>
+    </div>
+    <div class="ex-progress" aria-hidden="true"><div id="phBar" class="ex-bar"></div></div>
+    <p id="phStatus" class="dlg-status" role="status" aria-live="polite"></p>
+    <div class="dlg-actions">
+      <button id="phCancel" class="btn" type="button">Close</button>
+      <button id="phStart" class="btn primary" type="button">Save photo</button>
+    </div>
+  </dialog>
+
+  <dialog id="exportDlg" class="dlg" aria-labelledby="exTitle">
+    <h2 id="exTitle">Export video</h2>
+    <p id="exLen" class="dlg-note"></p>
+    <div id="exForm" class="dlg-form">
+      <label>Method <select id="exMode"></select></label>
+      <label class="vid-only">Format <select id="exFormat"></select></label>
+      <label class="vid-only">Resolution <select id="exRes"></select></label>
+      <label class="vid-only">Frame rate
+        <select id="exFps">
+          <option value="24">24 fps (cinema)</option><option value="25">25 fps</option><option value="30">30 fps</option>
+          <option value="50">50 fps</option><option value="60">60 fps (smooth motion)</option>
+        </select>
+      </label>
+      <label class="vid-only">Quality
+        <select id="exQuality">
+          <option value="auto" selected>Auto (best for the resolution)</option>
+          <option value="4">Smaller file (4 Mbps)</option>
+          <option value="8">Good (8 Mbps)</option>
+          <option value="12">High (12 Mbps)</option>
+          <option value="20">Very high (20 Mbps)</option>
+          <option value="40">Excellent (40 Mbps)</option>
+          <option value="60">Studio (60 Mbps)</option>
+          <option value="80">Maximum (80 Mbps)</option>
+        </select>
+      </label>
+      <label class="check hq-only"><input id="exEnhance" type="checkbox"> Enhance sharpness <small>(recommended when upscaling)</small></label>
+      <label class="check vid-only"><input id="exAudio" type="checkbox" checked> Include sound <small id="exAudioNote"></small></label>
+      <label class="hq-wav">Sound quality
+        <select id="exAudioQ"><option value="128">128 kbps</option><option value="192" selected>192 kbps</option><option value="320">320 kbps</option></select>
+      </label>
+      <label class="check hq-only" id="exToFileRow"><input id="exToFile" type="checkbox"> Choose where to save first <small>(best for long or 4K videos)</small></label>
+      <p id="exEstimate" class="dlg-note"></p>
+    </div>
+    <div class="ex-progress" aria-hidden="true"><div id="exBar" class="ex-bar"></div></div>
+    <p id="exStatus" class="dlg-status" role="status" aria-live="polite"></p>
+    <div class="dlg-actions">
+      <button id="exAgain" class="btn" type="button" hidden>Download again</button>
+      <button id="exCancel" class="btn" type="button">Close</button>
+      <button id="exStart" class="btn primary" type="button">Start export</button>
+    </div>
+  </dialog>
+
+  <dialog id="helpDlg" class="dlg" aria-labelledby="helpTitle">
+    <h2 id="helpTitle">Keyboard shortcuts</h2>
+    <table class="keys">
+      <tbody>
+        <tr><td><kbd>Space</kbd></td><td>Play or pause</td></tr>
+        <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>Step one frame</td></tr>
+        <tr><td><kbd>Shift</kbd> + <kbd>←</kbd> <kbd>→</kbd></td><td>Jump one second</td></tr>
+        <tr><td><kbd>Home</kbd> <kbd>End</kbd></td><td>Go to start or end</td></tr>
+        <tr><td><kbd>I</kbd> <kbd>O</kbd></td><td>Set trim in or out at the playhead</td></tr>
+        <tr><td><kbd>T</kbd></td><td>Add a text layer</td></tr>
+        <tr><td><kbd>S</kbd></td><td>Split the selected clip, layer or track at the playhead</td></tr>
+        <tr><td><kbd>Ctrl</kbd> + <kbd>D</kbd></td><td>Duplicate the selected item</td></tr>
+        <tr><td><kbd>Delete</kbd></td><td>Delete the selected item</td></tr>
+        <tr><td><kbd>Ctrl</kbd> + <kbd>I</kbd></td><td>Import videos, photos or music</td></tr>
+        <tr><td><kbd>R</kbd></td><td>Start or stop recording a voiceover</td></tr>
+        <tr><td><kbd>C</kbd></td><td>Crop and rotate the selected clip or photo</td></tr>
+        <tr><td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td><td>Undo</td></tr>
+        <tr><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd></td><td>Redo</td></tr>
+        <tr><td><kbd>Ctrl</kbd> + <kbd>S</kbd> / <kbd>O</kbd></td><td>Save or open a project</td></tr>
+        <tr><td><kbd>Ctrl</kbd> + <kbd>E</kbd></td><td>Export video</td></tr>
+        <tr><td><kbd>L</kbd> <kbd>G</kbd> <kbd>M</kbd> <kbd>F</kbd></td><td>Loop, guides, mute, full screen</td></tr>
+        <tr><td><kbd>Ctrl</kbd> + scroll</td><td>Zoom the timeline</td></tr>
+        <tr><td><kbd>Alt</kbd> while dragging</td><td>Move text or an overlay without snapping to centre</td></tr>
+        <tr><td>Mouse wheel on an overlay</td><td>Resize the selected overlay</td></tr>
+        <tr><td>Drag a clip on the timeline</td><td>Middle: reorder. Edges: trim</td></tr>
+      </tbody>
+    </table>
+    <div class="dlg-actions"><button id="helpClose" class="btn primary" type="button">Done</button></div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/vendor/mp4-muxer.js"></script>
+  <script src="js/vendor/webm-muxer.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/media.js"></script>
+  <script src="js/drafts.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/timeline.js"></script>
+  <script src="js/inspector.js"></script>
+  <script src="js/exporter.js"></script>
+  <script src="js/tools.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+Third-party AI components used by AK Knockout Studio
+=====================================================
+
+tf.min.js, tf-backend-wasm.min.js, tfjs-backend-wasm*.wasm
+  TensorFlow.js 4.22.0 — https://github.com/tensorflow/tfjs
+  Copyright Google LLC. Licensed under the Apache License, Version 2.0:
+  https://www.apache.org/licenses/LICENSE-2.0
+
+upscaler.min.js
+  UpscalerJS 1.0.0 — https://github.com/thekevinscott/UpscalerJS
+  MIT License (see LICENSE-upscaler.txt if present, and LICENSE-esrgan-models.txt)
+
+esrgan-slim-*.min.js, esrgan-medium-*.min.js, models/
+  @upscalerjs/esrgan-slim and @upscalerjs/esrgan-medium 1.0.0 — ESRGAN models
+  MIT License (see LICENSE-esrgan-models.txt)
+
+selfie/
+  MediaPipe Selfie Segmentation 0.1.1675465747 — https://github.com/google/mediapipe
+  Copyright Google LLC. Licensed under the Apache License, Version 2.0:
+  https://www.apache.org/licenses/LICENSE-2.0

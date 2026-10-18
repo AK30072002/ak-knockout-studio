@@ -1,0 +1,72 @@
+{
+  "name": "ak-knockout-studio",
+  "productName": "AK Knockout Studio",
+  "version": "3.0.0",
+  "description": "Free video and photo editor: AI upscaling, AI background removal, collages, stickers, multi-clip editing, transitions, music, 4K export and knockout text.",
+  "author": "AJAIKRISHNA",
+  "license": "MIT",
+  "homepage": "https://github.com/AK30072002/ak-knockout-studio",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win",
+    "dist:portable": "electron-builder --win portable",
+    "build:web": "node scripts/build-web.mjs",
+    "android:sync": "npm run build:web && npx cap sync android"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/share": "^8.0.3",
+    "electron": "^44.4.5",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.ajaikrishna.akknockoutstudio",
+    "productName": "AK Knockout Studio",
+    "copyright": "Copyright \u00a9 2026 AJAIKRISHNA",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "index.html",
+      "css/**/*",
+      "js/**/*",
+      "assets/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "icon": "assets/logo.png",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "AK Knockout Studio",
+      "artifactName": "AK-Knockout-Studio-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "AK-Knockout-Studio-${version}-portable.${ext}"
+    }
+  }
+}

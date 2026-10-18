@@ -1,0 +1,12 @@
+# Keep line endings consistent on every OS (silences the LF/CRLF warnings)
+* text=auto eol=lf
+*.png binary
+*.ico binary
+*.bat text eol=crlf
+*.jar binary
+*.wasm binary
+*.bin binary
+*.tflite binary
+*.binarypb binary
+*.data binary
+*.jpg binary

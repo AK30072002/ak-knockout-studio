@@ -1,0 +1,29 @@
+# OS / editor clutter
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+
+# Media you edit locally — keep large files out of the repo
+*.mp4
+*.webm
+*.mov
+*.mkv
+*.avi
+
+# Exported projects and snapshots
+*.akks.json
+# (snapshots are named <project>-MM-SS-FF.png)
+
+node_modules/
+
+# Desktop build output
+dist/
+
+# Android build: prepared web app, signing keys, local scratch files
+www/
+*.keystore
+*.jks
+scratch/
